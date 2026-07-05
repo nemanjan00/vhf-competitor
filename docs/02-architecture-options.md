@@ -91,9 +91,25 @@ to work them. Decouples the performance requirements of the two jobs.
 
 ## Status
 
-Open — see [decisions.md](decisions.md). Leaning **B** (or C) on the
-grounds that it exploits the parts thesis; a cost/complexity comparison
-with real surplus prices is the next step.
+Open — see [decisions.md](decisions.md), but converging on **B**. Two
+forces now point the same way:
+
+1. The parts thesis (surplus mixers/LO/IF bricks are where the arbitrage
+   lives) — the original argument.
+2. A digitizer preference set in the RX requirements: **high resolution,
+   low bandwidth**. The band is 2 MHz wide and never wider (#7, #15), so
+   sample rate above a few Msps buys nothing — while every extra ADC bit
+   buys blocking dynamic range in a strong-neighbor contest environment.
+   A 16-bit-class ADC at low rate is exactly the commodity HF-SDR
+   digitizer of Option B; wideband direct-sampling (Option A) spends its
+   money on bandwidth we'd throw away. High-res low-BW converters can't
+   digitize 144 MHz directly — the conversion stage isn't a compromise,
+   it's what lets the best-fit ADC be used at all.
+
+Remaining before closing: the combined platform decision (#8 + #22 TX) —
+the digitizer, the PureSignal feedback channel, and the IQ TX path should
+land on one coherent platform. A costed trade study with real surplus
+prices is the next step.
 
 ## TX side
 

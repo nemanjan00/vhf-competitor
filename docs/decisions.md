@@ -11,7 +11,7 @@ when the reasoning deserves more space. Status: **decided** / **leaning** /
 | 3 | Digitizer (ADC/FPGA/DAC) is a bought, proven SDR platform — not custom silicon/board design | **decided** | Innovation budget goes to RF integration + contest software |
 | 4 | Diagrams in Mermaid, docs in Markdown, in-repo | **decided** | GitHub renders both natively |
 | 5 | Every used block measured before trusted; records kept in-repo | **decided** | Test bench is the first module of the project |
-| 6 | RX architecture: direct sampling vs brick superhet vs hybrid | **open — leaning B/C** | Trade study in [02-architecture-options.md](02-architecture-options.md) |
+| 6 | RX architecture: direct sampling vs brick superhet vs hybrid | **open — converging on B** | RX digitizer preference: **high resolution, low bandwidth** (16-bit-class ADC, few Msps — bits buy blocking DR, extra bandwidth buys nothing for a 2 MHz band) → superhet down-conversion is what lets that ADC be used at all. Trade study in [02-architecture-options.md](02-architecture-options.md) |
 | 7 | Band plan: **2 m only** — the VHF ham band (144–146 MHz in IARU R1, assumed) | **decided** | Radio is purpose-built for VHF contests; no 70 cm/23 cm converters. Single band → single preselector/converter/PA chain, and the whole 2 MHz allocation fits one digitizer span |
 | 8 | Digitizer platform choice | **open** | Depends on #6; candidates: HF 16-bit SDR class for B, Hermes/ANAN/RFSoC class for A. New constraint from #21: stock gateware should provide a PureSignal-style feedback RX channel → favors openHPSDR-protocol family |
 | 9 | LO / reference strategy | **open** | GPSDO-disciplined OCXO assumed; synthesis chain (multiplied OCXO vs modern PLL, e.g. LMX2594-class) TBD |
