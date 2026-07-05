@@ -210,6 +210,25 @@ Practical notes:
   (mass, damping, orientation) is part of the LO design, and the narrow
   loop can't correct vibration-rate phase modulation — it's outside the
   loop BW by construction.
+  **Mitigation plan, imported from drone practice** (same physics as
+  soft-mounting an IMU away from motor vibration):
+  - *TPU-printed isolation mount* for the oscillator sub-assembly, with
+    added brass mass — a mass-on-damped-spring is a mechanical low-pass
+    filter. Tune its resonance well **below** the mast's dominant
+    excitation frequencies so wind/rotator vibration is attenuated, not
+    amplified; TPU's high loss factor keeps the mount's own resonance
+    tame. Print-tunable stiffness (infill/wall count) makes iterating
+    the corner frequency a bench afternoon, not a machining job.
+  - *Characterize before tuning*: put an IMU in the head enclosure (drone
+    hardware again) and record the actual vibration spectrum on the real
+    mast in real wind — mast resonances, rotator steps, guy-wire hum.
+    Design the isolator against measured spectra, not guesses. The IMU
+    stays installed afterward as a permanent health sensor.
+  - *Escalation path if passive isn't enough*: vibration-induced phase
+    error is deterministic given the crystal's g-sensitivity vector — the
+    IMU stream can drive **feed-forward digital phase correction** in the
+    GS DSP (the avionics OCXO trick; the "PID for the mast" instinct,
+    applied where it works — in the signal path, not the mount).
 - The same architecture serves the TX IQ LO (mid/edge-band per #22) with a
   second crystal.
 
