@@ -92,18 +92,22 @@ flowchart LR
     subgraph MAST[Masthead RF head]
         ADC[ADC 2 MHz span] --> FPGA[FPGA<br/>decimate + pack<br/>+ sequencer/keyer]
     end
-    subgraph GS[Ground station — headless, real-time]
+    subgraph GS[Ground station — real-time station core]
         CHAN[Channelizer<br/>full band → N slices]
         NPU[NPU<br/>AI-assisted noise cancelling<br/>per slice]
         SKIM[Skimmer / band-map engine]
         REC[(Full-band IQ<br/>recording)]
+        HID[Operator hardware I/O<br/>knobs · mic + PTT · paddle]
+        SW{{Built-in Ethernet switch}}
         CHAN --> NPU
         CHAN --> SKIM
     end
-    FPGA ==>|full-band IQ<br/>~100 Mbit/s| CHAN
+    FPGA ==>|full-band IQ<br/>~100 Mbit/s<br/>dedicated point-to-point port| CHAN
     CHAN --> REC
-    NPU -->|audio / thin slice streams| OP[Operator position<br/>UI: waterfall · slices · band map · logger]
-    SKIM -->|spots| OP
+    NPU --> SW
+    SKIM --> SW
+    SW ---|UI · audio · spots| T1[Terminal: laptop]
+    SW ---|UI · audio · spots| T2[Terminal: laptop 2 / multi-op]
 ```
 
 Why the extra tier (the reasoning behind it):
@@ -135,9 +139,22 @@ Division of labor:
   reduction per slice**. It runs headless with a real-time-tuned stack —
   deterministic latency without host-PC hiccups, meters from the head, on
   mains power (no PoE constraint on compute).
-- **Operator position becomes a thin client** — UI, logger, audio. Can be
-  anything, can crash without taking the radio down, satisfies the failure
-  philosophy question (#2 above) by construction.
+- **The ground station is also the station core, not just a DSP box.**
+  Two further roles:
+  - **It absorbs the hardware complexity of the operator position.** The
+    physical human interface — tuning knobs, mic with PTT, CW paddle —
+    plugs into the ground station directly. That keeps every
+    latency-critical human input (PTT! paddle!) on the deterministic
+    real-time box instead of traversing a laptop OS, USB stack, and a
+    network hop. Terminals need *zero* special hardware.
+  - **It has a built-in Ethernet switch** and is the network boundary: one
+    dedicated port for the point-to-point mast segment, switched ports for
+    terminals (laptops). Plugging in a second laptop = a second operator
+    position — multi-op falls out of the architecture for free.
+- **Terminals become pure software thin clients** — UI, logger, audio over
+  the switched ports. Any laptop works, can crash without taking the radio
+  down, satisfies the failure philosophy question (#2 above) by
+  construction.
 
 On the AI noise cancelling itself, notes for when this materializes:
 
