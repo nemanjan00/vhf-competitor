@@ -244,6 +244,38 @@ What DPD buys specifically in this project:
   PA design for hot operation (composes with the enclosure-as-heatsink
   decision in 03).
 
+### TX conversion architecture: IQ TX *(considering)*
+
+Direction under consideration: **direct quadrature (zero-IF) TX** — the
+head takes the predistorted baseband IQ from the link, runs an I and Q DAC
+pair, and a quadrature modulator translates straight to 144 MHz in one
+step. No TX IF, no image filter chain, minimal analog TX hardware
+(modulator + LO are one brick each; the same GPSDO-disciplined LO family
+as RX).
+
+The classic objections to zero-IF TX — and why this architecture already
+answers them:
+
+- **Carrier (LO) leak** at band center and **image sidebands** from I/Q
+  gain/phase imbalance are the traditional zero-IF TX diseases. But the
+  DPD feedback path (above) watches the actual PA output through the same
+  digitizer — the identical slow adaptation loop that linearizes the PA
+  can null carrier leak and image digitally, continuously, over
+  temperature. Zero-IF TX without a feedback receiver is a compromise;
+  **with one, it is self-calibrating**. The two decisions reinforce each
+  other.
+- LO sits mid-band while transmitting off-center → leak lands in-band if
+  uncorrected; the adaptation handles steady-state, and a deliberate LO
+  offset plan (park the LO at a band edge, digitally shift TX) remains an
+  option if residual leak ever matters.
+
+Interaction with platform choice (#8), to be resolved with the A/B/C
+fork: openHPSDR-class platforms TX via an HF DAC (which would want a TX
+upconverter brick — transverter-style, option-B-flavored); zero-IF IQ TX
+at 144 MHz natively is the LimeSDR/Pluto/AD936x-class approach, or a
+discrete IQ modulator brick driven by the platform's baseband. The RX
+digitizer choice and TX conversion choice are one combined decision.
+
 ## Status
 
 Digitize-whole-band: **decided** (decisions.md #15). Partitioning: **open**
