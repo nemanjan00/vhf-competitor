@@ -50,6 +50,17 @@ flowchart TB
   eliminates USB-tethered candidates (decisions.md #8).
 - **GPS antenna is right there** — the GPSDO reference gets sky view for
   free.
+  And the GPSDO itself **belongs in the masthead unit**, not further down:
+  every frequency-critical component in the whole station — ADC sampling
+  clock, converter LO, TX chain — lives at the head, so the reference
+  should be generated where it is consumed. A 10 MHz + PPS distributed up a
+  long cable would add a noise/leakage path for nothing. Corollary for the
+  rest of the station: nothing below the mast needs a precision *frequency*
+  reference at all. The ground station only needs *time* (skimmer
+  timestamps, clock-synced modes like FT8/MSK144 if they land in the mode
+  mix) — and the head can serve that over the point-to-point link (PTP,
+  disciplined by the same GPS), so the whole station is traceable to one
+  reference with zero extra cables.
 - **Cooling comes free with the location.** The PA — the only serious heat
   source — sits in moving outdoor air on an elevated mast, which is about
   the best convective environment a radio can get: no rack, no room
