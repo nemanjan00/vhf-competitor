@@ -174,8 +174,37 @@ Practical notes:
 - 142 MHz means a 5th/7th-overtone crystal — custom-ordered (quartz houses
   still cut these; also the standard transverter-LO crystal ecosystem,
   e.g. 116 MHz, shows the supply chain exists) or harvested.
-- 142 MHz sits safely out-of-band; the image (138–140 MHz) falls to the
-  preselector.
+- **IF placement: 4–6 MHz (LO at 140 MHz), not 2–4 (LO at 142).** Two
+  reasons to sit higher:
+  - *DC/low-frequency hygiene* — more distance from ADC offset, drift,
+    and the 1/f region of the IF amps; the band floor at 4 MHz is
+    comfortably clear of all of it.
+  - *The octave problem (the stronger reason)* — a 2–4 MHz IF spans an
+    octave: the second harmonic of the band bottom (2×2 = 4 MHz) lands
+    exactly at the band top, so any even-order distortion in the IF
+    amps or ADC front end drops harmonics of strong in-band signals
+    **onto other in-band frequencies**. At 4–6 MHz the second harmonic
+    of the bottom edge (8 MHz) is already above the top edge — the
+    passband is harmonic-free for 2nd order (and 3rd: 12 MHz). One MHz
+    of placement buys a whole class of spurs gone.
+  - Bonus: 140 MHz = 14 × 10 MHz exactly — integer-N comparison against
+    the GPSDO makes the clean-up loop's divider trivial.
+  - LO and image both remain safely out of band (image 134–136 MHz, to
+    the preselector; LO 4 MHz below the band edge).
+- **Decimation moves to software too.** With the IF at 4–6 MHz the ADC
+  runs at a modest rate (e.g. 16 Msps real, band well under the 8 MHz
+  Nyquist edge), and the raw sample stream is only 16 Msps × 16 bit ≈
+  **256 Mbit/s — it fits the point-to-point GbE link as-is**. So the head
+  doesn't even need DDC gateware: it ships raw IF samples, and the ground
+  station does the entire digital down-conversion (mix 5 MHz → baseband,
+  filter, decimate to the 2.5 Msps band stream) in software. The masthead
+  FPGA's remaining digital job collapses to *packetizing ADC samples into
+  Ethernet frames* plus the safety/keying logic — the dumbest, most
+  verifiable gateware possible, and the GS gains yet another
+  runtime-changeable stage (decimation filters as arrays in memory, per
+  the no-FPGA-filters rule in 05). Recording can then even keep the raw
+  IF stream (≈ 32 MB/s, ~5.5 TB/48 h) when wanted, with the 2.5 Msps
+  archive as the default.
 - **Microphonics are the new enemy**: VHF crystals are vibration-sensitive
   and this one lives *on a mast in the wind*. Mechanical mounting
   (mass, damping, orientation) is part of the LO design, and the narrow
