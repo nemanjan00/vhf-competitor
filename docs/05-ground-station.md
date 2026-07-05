@@ -17,6 +17,45 @@ clients lives here.
 | Timing | Real-time-tuned stack; PTT/paddle handled with deterministic latency | 04 |
 | Acoustics | Sits on the operating desk next to an open mic → fanless or near-silent | 03 |
 | Placement | Within arm's reach of operator (knobs, mic) | 04 / Q3f |
+| Storage | Record the **entire 2 m band, full contest duration** (see sizing below) | 04 / this doc |
+
+## Full-contest band recording
+
+Recording the whole band for the whole contest is cheap enough that the
+question inverts: there is no reason *not* to.
+
+Sizing at 2.5 Msps complex (covers the 2 MHz allocation with filter
+margin):
+
+| Bit depth | Data rate | 24 h contest | 48 h |
+| --- | --- | --- | --- |
+| 2 × 8 bit | 5 MB/s | 432 GB | 864 GB |
+| 2 × 16 bit | 10 MB/s | 864 GB | 1.7 TB |
+| 2 × 24 bit | 15 MB/s | 1.3 TB | 2.6 TB |
+
+**Requirement: minimum 48 h of the full 2 MHz band.** At full 16-bit depth
+that is 1.7 TB — a single commodity 2 TB NVMe covers the minimum, and a
+4 TB drive gives 48 h with margin plus room to keep the *previous*
+contest while operating the current one. The ~10 MB/s write rate is
+trivial (no RAID, no exotic filesystem — one drive, ring-buffer files).
+Storage lives in the ground station, on the same box already receiving
+the full-band stream.
+
+What it buys, in rough order of contest value:
+
+1. **Instant replay while operating** — re-listen to the exchange you
+   half-copied *seconds ago* on any frequency, not just the one you were
+   on. A "what did he say?" button is arguably the single highest-value
+   UI feature this architecture enables.
+2. **Post-contest audit** — resolve every questionable QSO in the log
+   against what was actually on the air; log-checking disputes end.
+3. **Training data** — labeled, real-condition IQ for the NPU noise
+   cancelling and skimmer models, collected as a side effect of operating.
+4. **Skimmer development loop** — replay the same contest through improved
+   decoders and measure the improvement on ground truth.
+5. **Missed-multiplier forensics** — after the contest, sweep the recording
+   for stations that were workable but never found. Directly measures the
+   thing this whole project exists to fix.
 
 ## Form factor: 19″ rack server case, modified front panel *(considering)*
 
