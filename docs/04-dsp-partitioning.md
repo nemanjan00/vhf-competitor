@@ -181,6 +181,69 @@ On the AI noise cancelling itself, notes for when this materializes:
   worth more points than NR polish. The full-band recording (see #4 above)
   doubles as training data collection from day one.
 
+## TX path: adaptive predistortion (PureSignal-class DPD)
+
+Requirement: the TX chain runs **adaptive digital predistortion** —
+PureSignal-style, as in the openHPSDR ecosystem — so the PA can be driven
+hard while keeping spectral purity (IMD) at lab-grade levels.
+
+How the pieces map onto our tiers — the key insight is that DPD has three
+parts with very different speed requirements:
+
+```mermaid
+flowchart LR
+    subgraph GS[Ground station]
+        TXGEN[TX IQ generation<br/>mic/CW → modulator]
+        PREDIST[Predistorter<br/>applies correction to TX IQ]
+        ADAPT[Adaptation algorithm<br/>compares TX vs feedback,<br/>updates correction — slow loop]
+        TXGEN --> PREDIST
+        ADAPT -.->|updated coefficients| PREDIST
+    end
+    subgraph HEAD[Masthead RF head]
+        DAC[TX DAC + upconv] --> PA[PA]
+        PA --> COUP[Directional coupler]
+        COUP --> ANT2[Antenna]
+        COUP -->|attenuated sample| FBRX[Feedback RX channel<br/>into the same digitizer]
+    end
+    PREDIST ==>|predistorted TX IQ<br/>up the point-to-point link| DAC
+    FBRX ==>|feedback IQ down| ADAPT
+```
+
+- **Correction application** sits in the TX sample path. Our TX IQ is
+  generated at the ground station anyway, so the predistorter is just one
+  more software block before the samples go up the link. CPU-speed, our
+  code.
+- **Adaptation** compares clean TX IQ against what the PA actually emitted
+  and updates coefficients over seconds — slow, runs at the GS.
+- **The feedback receiver** is the only piece that must exist at the head:
+  a directional coupler after the PA, an attenuator, and a feedback channel
+  into the digitizer, time-aligned with TX.
+
+Consequence for the gateware position: **a feedback RX path is a stock
+feature of openHPSDR-protocol platforms** — PureSignal is a first-class
+citizen of that ecosystem (ANAN-class hardware, Thetis/WDSP host code,
+much of it reusable). So this requirement doesn't force custom gateware;
+instead it **constrains platform choice (#8) to platforms whose stock
+gateware already supports a PureSignal feedback channel** — one more
+argument for the openHPSDR family. (If a chosen platform lacked it, *that*
+is the one gateware feature worth patching in — the fallback, not the
+plan.)
+
+What DPD buys specifically in this project:
+
+- **Surplus PA economics.** DPD relaxes the PA's native linearity
+  requirement — a used PA pallet run efficient-and-hot, linearized in
+  software, can meet purity specs it never met on its own datasheet. The
+  same arbitrage as the RF bricks, extended to the most expensive analog
+  block in the station.
+- **Being a good neighbor while being loud** — clean IMD skirts matter
+  most exactly in a contest, on a crowded band, with the beam pointed at
+  everyone else.
+- Hardware obligations added to the head: directional coupler + calibrated
+  attenuation into the feedback input, and thermal/level headroom in the
+  PA design for hot operation (composes with the enclosure-as-heatsink
+  decision in 03).
+
 ## Status
 
 Digitize-whole-band: **decided** (decisions.md #15). Partitioning: **open**
