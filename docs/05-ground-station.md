@@ -213,6 +213,28 @@ flowchart TB
 - Front-panel HID and audio wiring crosses the box — keep mic lines
   balanced and short, route away from the switch and PSU.
 
+## Build phasing: the GS starts as a desktop
+
+Because the ground station is defined by its **software and its network
+role**, not its box, the GS can begin life as the existing desktop PC:
+
+1. **Phase 1 — RF first, desktop as GS.** Build and bench the RF
+   head; plug its point-to-point link into a desktop's spare NIC. The
+   desktop runs the full GS stack (channelizer, waterfall, recorder,
+   skimmer) — every line of which is the *real* software, developed
+   against real signals from day one. Audio via any interface, HID via
+   USB. Nothing is throwaway.
+2. **Phase 2 — dedicated GS box.** When the rack chassis materializes, the
+   software moves unchanged; the desktop's role shrinks back to being a
+   terminal on the switched side. NPU, studio audio, front panel arrive as
+   incremental PCIe/panel additions.
+3. **Phase 3 — masthead deployment.** The bench-proven head goes up the
+   mast; nothing else changes.
+
+This ordering also front-loads the two highest-risk items (LO block, RF
+integration) and defers the lowest-risk purchases (chassis, NPU, audio
+gear) until the system already works.
+
 ## Open questions (queued in QUESTIONS.md)
 
 - Compute + NPU platform (Q3d) — decides everything downstream of the
