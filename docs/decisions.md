@@ -16,4 +16,7 @@ when the reasoning deserves more space. Status: **decided** / **leaning** /
 | 8 | Digitizer platform choice | **open** | Depends on #6; candidates: HF 16-bit SDR class for B, Hermes/ANAN/RFSoC class for A |
 | 9 | LO / reference strategy | **open** | GPSDO-disciplined OCXO assumed; synthesis chain (multiplied OCXO vs modern PLL, e.g. LMX2594-class) TBD |
 | 10 | Contest software stack (build vs integrate with existing loggers/skimmers) | **open** | Likely integrate first (CAT/band-map protocols), build the glue |
-| 11 | Power amplifier strategy | **open** | Deferred until TX architecture exists |
+| 11 | Power amplifier strategy | **open** | Deferred until TX architecture exists; PoE-vs-hybrid feed gates on target power |
+| 12 | Station topology: radio is a **mast-mounted RF head** below the antenna; controlled over **Ethernet**; PoE if the power budget allows, else Ethernet + DC pair | **decided** | Feedline loss eliminated on both RX (NF) and TX (ERP); digitizer must be Ethernet-native; local hardware sequencer mandatory. See [03-station-topology.md](03-station-topology.md) |
+| 13 | Masthead power: feed sized for **average** draw, **supercap bank** buffers TX peaks; all supply rails filtered (common-mode + feedthrough at bulkhead) | **decided** | Peaky SSB/CW duty cycle → thinner feed, no sag at voice peaks; precharge, balancing, and DC-DC to PA rail are design obligations. See [03-station-topology.md](03-station-topology.md) |
+| 14 | Data link medium: copper Ethernet vs fiber + separate DC | **open** | Fiber kills surge and RFI coupling problems outright; surplus media converters/SFPs are cheap |
