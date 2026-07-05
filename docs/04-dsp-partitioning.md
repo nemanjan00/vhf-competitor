@@ -147,6 +147,17 @@ Division of labor:
     latency-critical human input (PTT! paddle!) on the deterministic
     real-time box instead of traversing a laptop OS, USB stack, and a
     network hop. Terminals need *zero* special hardware.
+  - **It carries the audio chain — at professional grade.** Because all
+    station audio funnels through one box, it only has to be built well
+    once: studio-class codec (ADC/DAC), balanced low-impedance mic input
+    with proper preamp (and phantom power, so studio mics are usable —
+    surplus broadcast/studio gear is the same arbitrage as the RF bricks),
+    a real headphone amplifier per operator, and clean analog supply rails
+    isolated from the digital section. Contest-specific wins fall out:
+    per-ear audio routing (run frequency left, S&P slice right), consistent
+    TX audio (one known mic chain into the modulator instead of N laptop
+    soundcards), and RX/TX audio that never touches a consumer sound
+    device.
   - **It has a built-in Ethernet switch** and is the network boundary: one
     dedicated port for the point-to-point mast segment, switched ports for
     terminals (laptops). Plugging in a second laptop = a second operator
