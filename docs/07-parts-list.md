@@ -20,7 +20,7 @@ Prices are rough placeholders to be verified at order time.
 
 | Block | Candidate | Status | Notes |
 | --- | --- | --- | --- |
-| 50 W BPF | surplus telecom/PMR cavity retuned; new: DCI-145-2H class | candidate | Lowest-loss block matters most: loss counts twice (NF + ERP) |
+| 50 W BPF | surplus telecom/PMR cavity retuned; new: DCI-145-2H class | candidate | Lowest-loss block matters most: loss counts twice (NF + ERP). Spec target calibrated on 4O3A XL (≈0.5 dB IL, 55–75 dB stop, 5 resonators) — that series itself rejected: HF-only, 4.5 kW/65 cm shack unit, far too heavy for a masthead |
 | T/R relay | surplus coax relay (Dow-Key / Radiall / Transco), SMA/N | candidate | Low loss, high isolation, ≥ 50 W hot-switch-safe rating with sequencer |
 | RX preselector | helical 3-pole 144–146 (Toko-style or surplus PMR) | candidate | RX-only path — power rating irrelevant, loss still matters (pre-LNA) |
 | Step attenuator | relay-switched pads (Mini-Circuits ZX76-class or relay+fixed pads) | candidate | 0/10/20 dB states; state must be reported into stream metadata |
