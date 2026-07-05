@@ -106,6 +106,24 @@ flowchart LR
     SKIM -->|spots| OP
 ```
 
+Why the extra tier (the reasoning behind it):
+
+- **The mast link becomes point-to-point.** RF head ↔ ground station is a
+  dedicated segment with exactly two endpoints: no switch queues, no
+  competing traffic, no bufferbloat — timing and flow control are
+  *predictable by construction*, not by QoS configuration. The
+  latency-sensitive stream (IQ down, TX/keying up) lives entirely on this
+  segment. It also frees the protocol: raw Ethernet frames or dumb UDP at a
+  fixed rate work fine when nothing can congest the wire, so the masthead
+  FPGA's network stack stays trivial.
+- **The operator link becomes ordinary.** Ground station ↔ operator PC
+  carries audio, waterfall frames, and spots — all jitter-tolerant — over
+  whatever LAN/Wi-Fi exists. The timing-critical and convenience domains
+  are physically separated instead of sharing one network.
+- **Weight (and heat) come off the mast.** Compute lives at ground level;
+  the masthead unit is only RF + digitizer + sequencer, which shrinks the
+  enclosure, the wind load, the thermal problem, and the PoE budget.
+
 Division of labor:
 
 - **Masthead FPGA does the minimum**: digitize, decimate, pack, plus the
