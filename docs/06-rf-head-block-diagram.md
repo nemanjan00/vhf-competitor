@@ -20,7 +20,7 @@ flowchart TB
     end
 
     subgraph RX[RX chain → IF 4–6 MHz]
-        IMG["Image filter BPF<br/>(kills 134–136 image)"]
+        IMG["Image rejection: likely already provided<br/>by the two front-end BPFs (134–136 is<br/>80–120 dB down, cascaded) — dedicated<br/>image filter only if bench says so ⚠"]
         RXMIX["RX mixer (level-17 brick)"]
         DIPLEX[Diplexer / termination]
         IFAMP[IF amp]
@@ -115,7 +115,7 @@ flowchart TB
 | Preselector | telecom/PMR cavity or helical, retuned to 144–146 | sets out-of-band survival |
 | Step attenuator | relay/PIN switched pads | overload insurance; engaged NF penalty is acceptable exactly when the band is loud |
 | LNA | PGA-103/PSA4-class or Mini-Circuits brick | NF set here for the whole station |
-| Image/IF/AA filters | SBP/SLP bricks + custom LC where needed | image reject + octave-clean IF |
+| IF/AA filters | SBP/SLP bricks + custom LC where needed | octave-clean IF; dedicated image filter provisionally deleted — front-end BPF cascade covers 134–136, confirm by measurement |
 | RX/FB mixers | ZFM/ZX05 level-17 | measured before trust |
 | IQ modulator | eval-board or brick modulator | LO leak/image handled by #21 loop |
 | PA | ⚠ surplus pallet, ~50 W class (confirm Q3) | run hot, DPD-linearized |
@@ -153,3 +153,6 @@ tiers:
    chain must be planned toward.
 3. TX LO parking frequency (in-band leak management, #22).
 4. Clean-up loop crossover measurement (bench, once crystals exist).
+5. Measured stopband of the BPF cascade at 134–136 MHz → confirms the
+   dedicated image filter stays deleted (it is provisionally absorbed
+   into the front-end filtering).
