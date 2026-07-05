@@ -43,6 +43,15 @@ No monolithic rig offers that.
    leaking around a chain of jumpered bricks is a real failure mode. The
    cumulative gain / NF / IP3 spreadsheet is the central design artifact, not
    an afterthought.
+   Jumper policy: **lab-grade assemblies (Sucoflex class, surplus)
+   everywhere it flexes; hand-formable semi-rigid (RG-402 class) for fixed
+   runs inside enclosures.** At 144 MHz their insertion loss is irrelevant —
+   what's being bought is **shielding effectiveness** (>100 dB screening vs
+   ~40–60 dB for braided budget coax; this is the leakage budget, purchased
+   per-jumper), connector quality that survives hundreds of bench
+   mate/demate cycles, and mechanical/phase stability. Used assemblies get
+   the same treatment as used bricks: measure (loss + a connector look)
+   before trusting.
 3. **Three things bricks cannot provide:**
    - the **digitizer** (ADC/FPGA/DAC) — a proven SDR platform is bought, not
      built (candidates in [02-architecture-options.md](02-architecture-options.md));
