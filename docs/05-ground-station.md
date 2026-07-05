@@ -101,6 +101,29 @@ an ordinary PC platform:
 | HID (knobs, PTT, paddle) | USB, or a small microcontroller board for the timing-critical inputs |
 | Real-time stack | Linux + RT tuning, CPU core pinning for the DSP path |
 
+**Do the DSP filters need an FPGA? No.** The rule of thumb: FPGAs earn
+their complexity when sample rates are high (hundreds of Msps) or when
+latency must be cycle-deterministic. Neither applies below the head:
+
+- The one place filtering happens at high rate — the ADC output, at the
+  full converter rate — is inside the masthead SDR platform's FPGA, and
+  that decimation-to-2.5-Msps gateware ships **stock** with any candidate
+  platform (#8). We write none of it.
+- Everything downstream runs at ≤ 2.5 Msps complex. A generously sized
+  polyphase channelizer, all the per-slice FIRs, and every demodulator
+  together amount to a few Gmul/s — a fraction of one AVX-capable core.
+  Filters become arrays in memory: redesignable at runtime (per-mode
+  shapes, adjustable skirts, experiment-friendly) instead of frozen in
+  gateware.
+- Latency from CPU block processing at these rates is sub-millisecond to
+  a few ms with RT tuning — inside any budget Q3c can plausibly set. The
+  only cycle-critical jobs (sequencer, keying) were already assigned to
+  the head's FPGA/MCU for safety reasons, not throughput.
+
+So the partition stays clean: **FPGA where the samples are fast (head,
+stock gateware); CPU where the samples are slow (GS, our code)**. Custom
+gateware remains a thing this project deliberately does not write.
+
 No exotic hardware anywhere — the ground station is a **software product
 plus system integration**, not a hardware development project. The only
 custom physical element left is the front panel. This effectively answers
