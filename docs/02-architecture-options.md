@@ -259,6 +259,30 @@ chains low-IF would need; and the integrated chips that make low-IF cheap
 decision. Revisit only if the platform choice (#8) surfaces a 16-bit
 low-IF part that collapses the parts count.
 
+### Undersampling variant: aliasing as the mixer *(phase-1 path + measured challenger)*
+
+Bandpass-sample 144–146 MHz directly: at fs = 122.88 MHz the band aliases
+to 21.12–23.12 MHz (2nd Nyquist zone) — the sampling process is the mixer,
+the ADC clock is the LO. Deletes the RX mixer, diplexer, IF amp, 140 MHz
+crystal and its clean-up PLL; the front-end BPF cascade doubles as the
+Nyquist-zone filter (its existing job). The Red Pitaya 122-16 platform
+does this natively with existing gateware (Pavel Demin projects).
+
+The toll — same physics, new mask: **jitter scales with input frequency,
+not alias frequency**. Holding ~78 dB (12.5+ ENOB) at 146 MHz needs total
+jitter ≤ ~140 fs; with ~80 fs ADC aperture that leaves ~110 fs for the
+clock — a 29 dB harder clock problem than the superhet's 5 MHz IF
+(20·log(146/5)). Reciprocal mixing returns as clock phase noise. Mitigation
+is the same trick as the LO: a low-noise fixed 122.88 MHz VCXO cleaned
+against the GPSDO through a narrow loop.
+
+**Standing plan:** superhet remains the decided target (#6); undersampling
+is the **phase-1 bring-up receiver** (zero extra hardware on the leading
+platform: BPF → LNA → ADC) and a challenger to be settled **by
+measurement** — if the cleaned-clock undersampling RX measures within spec
+on blocking/reciprocal mixing, the converter section never gets built; if
+not, we know exactly how many dB the mixer buys.
+
 Remaining before closing: the combined platform decision (#8 + #22 TX) —
 the digitizer, the PureSignal feedback channel, and the IQ TX path should
 land on one coherent platform. A costed trade study with real surplus

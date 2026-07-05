@@ -46,7 +46,7 @@ Prices are rough placeholders to be verified at order time.
 
 | Candidate | For | Against |
 | --- | --- | --- |
-| **Red Pitaya SDR 122-16** (16-bit LTC2185 ADC, 2× 14-bit DAC, Zynq, GbE) | Checks nearly every box: true 16-bit ADC, two ADC inputs (RX + feedback), DAC pair for IQ TX, Ethernet-native, existing openHPSDR-compatible gateware **with PureSignal support** (Pavel Demin's projects) — the "near-stock gateware" plan holds | 14-bit DACs (fine: TX purity is DPD's job); verify input full-scale + clocking from external 10 MHz |
+| **Red Pitaya SDR 122-16** (16-bit LTC2185 ADC, 2× 14-bit DAC, Zynq, GbE) | Checks nearly every box: true 16-bit ADC, two ADC inputs (RX + feedback), DAC pair for IQ TX, Ethernet-native, existing openHPSDR-compatible gateware **with PureSignal support** (Pavel Demin's projects) — the "near-stock gateware" plan holds; also natively supports the **undersampling phase-1 path** (02): 144–146 aliases to ~21–23 MHz at fs 122.88 | 14-bit DACs (fine: TX purity is DPD's job); verify input full-scale + clocking from external 10 MHz |
 | Discrete: LTC2185 eval + framer FPGA board | Exactly and only what we need | Custom FPGA work — violates the no-custom-gateware doctrine |
 | Used HF SDR (single RX only) | Cheap phase-1 RX-only start | No TX path, no feedback channel — phase 1 stopgap at best |
 
