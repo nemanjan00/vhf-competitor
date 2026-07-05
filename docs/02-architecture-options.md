@@ -232,6 +232,33 @@ Practical notes:
 - The same architecture serves the TX IQ LO (mid/edge-band per #22) with a
   second crystal.
 
+### Considered: quadrature (IQ) mixer for RX instead of the real-IF superhet
+
+Two variants were examined and the reasoning is preserved here:
+
+- **Zero-IF (LO mid-band): rejected.** DC offset/1/f/LO self-mixing land
+  mid-waterfall; I/Q imbalance mirrors strong in-band stations onto other
+  in-band frequencies with no RX-side self-calibration loop (the DPD
+  feedback that justifies zero-IF on TX has no RX equivalent); IP2
+  products land in-band.
+- **Low-IF quadrature (LO parked below the band, use the top of the
+  complex capture — e.g. LO 141 MHz, band at +3…+5 MHz): viable.** DC and
+  1/f fall outside the used band; in-band mirrors land out-of-band; the
+  band that could image *in* (137–139 MHz) is already crushed by the two
+  front-end BPFs, demoting I/Q balance to a second line of defense; IP2
+  difference products land near DC, out of band. (+3…+5 rather than
+  +2…+4 keeps the octave rule — same reasoning as the real-IF placement.)
+
+**Decision: stay with the real-IF superhet**, but as a preference between
+two sound designs, not a category rejection. The tiebreakers: one analog
+path and one ADC channel instead of two that must stay gain/phase-matched
+(imbalance is impossible by construction, not merely calibrated); the IF
+strip (one amp, one filter) is no heavier than one of the two baseband
+chains low-IF would need; and the integrated chips that make low-IF cheap
+(AD936x class) are 12-bit — taking them would silently forfeit the 16-bit
+decision. Revisit only if the platform choice (#8) surfaces a 16-bit
+low-IF part that collapses the parts count.
+
 Remaining before closing: the combined platform decision (#8 + #22 TX) —
 the digitizer, the PureSignal feedback channel, and the IQ TX path should
 land on one coherent platform. A costed trade study with real surplus
