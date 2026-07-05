@@ -276,6 +276,16 @@ clock — a 29 dB harder clock problem than the superhet's 5 MHz IF
 is the same trick as the LO: a low-noise fixed 122.88 MHz VCXO cleaned
 against the GPSDO through a narrow loop.
 
+*Why not undersample with a slow ADC (few Msps)?* The theorem allows it
+(fs ≥ 2× bandwidth), but practice says no four ways: (1) the ADC's analog
+input BW must still reach 146 MHz — slow 16-bit parts can't see the band;
+(2) the ~140 fs jitter budget scales with input frequency and doesn't
+relax at all; (3) noise folding — front-end noise piles into fs/2 with no
+decimation processing gain to discard it (~17 dB lost vs 122.88 Msps);
+(4) the alias neighbors move next door: at fs = 12.8 M the adjacent
+Nyquist zone starts 1.2 MHz above the band edge (147.2 MHz, populated) —
+unfilterable. Clock fast, decimate hard.
+
 **Standing plan:** superhet remains the decided target (#6); undersampling
 is the **phase-1 bring-up receiver** (zero extra hardware on the leading
 platform: BPF → LNA → ADC) and a challenger to be settled **by
