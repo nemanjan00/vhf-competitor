@@ -58,9 +58,15 @@ flowchart TB
   rest of the station: nothing below the mast needs a precision *frequency*
   reference at all. The ground station only needs *time* (skimmer
   timestamps, clock-synced modes like FT8/MSK144 if they land in the mode
-  mix) — and the head can serve that over the point-to-point link (PTP,
-  disciplined by the same GPS), so the whole station is traceable to one
-  reference with zero extra cables.
+  mix) — and the head can serve that over the point-to-point link as an
+  **NTP server disciplined by the same GPS/PPS** (chrony). NTP is
+  sufficient by a wide margin: clock-synced modes want tens of
+  milliseconds, and on an uncongested point-to-point segment chrony
+  performs near its best case (no asymmetric queuing delay). PTP with
+  hardware timestamping stays available as an upgrade path if
+  sub-microsecond wall-clock is ever actually needed — sample-accurate
+  alignment already lives in the IQ stream itself. Either way the whole
+  station is traceable to one reference with zero extra cables.
 - **Cooling comes free with the location.** The PA — the only serious heat
   source — sits in moving outdoor air on an elevated mast, which is about
   the best convective environment a radio can get: no rack, no room
