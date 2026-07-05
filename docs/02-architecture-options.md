@@ -106,6 +106,37 @@ forces now point the same way:
    digitize 144 MHz directly — the conversion stage isn't a compromise,
    it's what lets the best-fit ADC be used at all.
 
+### How many bits are actually useful? (~16 — beyond that, diminishing returns)
+
+Marketing bits ≠ delivered bits: a good "16-bit" Msps-class ADC delivers
+~12.5–13.5 ENOB (~78–84 dB SNR at full scale). That sounds short of
+contest-grade until **processing gain** is counted: the noise is spread
+across the whole digitized span, and filtering 2.5 Msps down to a 500 Hz
+CW slice recovers 10·log₁₀(2.5 M/500) ≈ **37 dB**. So a real 16-bit
+converter yields ~**115 dB dynamic range in 500 Hz** — the same territory
+as the best analog contest receivers ever built.
+
+Why more bits stop paying:
+
+- Above that level, **other limits dominate**: clock jitter (reciprocal
+  mixing's digital twin), front-end IMD in the LNA/mixer, and the band's
+  own noise floor arriving through the antenna. A 20-ENOB converter behind
+  a chain that delivers 110 dB is buying resolution for signals the chain
+  has already corrupted.
+- True >16-ENOB converters at Msps rates essentially don't exist —
+  "24-bit" parts at these speeds deliver nowhere near 24 (delta-sigma
+  parts hit high ENOB only at audio-class rates).
+- The last practical win of the 16-bit class is operational: enough
+  headroom to run **fixed RF gain with no AGC ahead of the ADC** — the
+  strongest neighbor just uses the top bits while the noise floor stays
+  put. That property arrives at ~16 bits; more bits don't add a second
+  such threshold.
+
+Spec consequence: digitizer target is a **true 16-bit-class ADC (≥ ~12.5
+ENOB at the IF), clocked from the GPSDO-disciplined reference with a
+jitter budget matched to those bits** — clock quality is spent as
+carefully as bit count, or the bits are fiction.
+
 Remaining before closing: the combined platform decision (#8 + #22 TX) —
 the digitizer, the PureSignal feedback channel, and the IQ TX path should
 land on one coherent platform. A costed trade study with real surplus
