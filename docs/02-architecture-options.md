@@ -91,7 +91,7 @@ to work them. Decouples the performance requirements of the two jobs.
 
 ## Status
 
-Open — see [decisions.md](decisions.md), but converging on **B**. Two
+**Decided: Option B, real-IF superhet** (decisions.md #6) — chosen on best performance; see the considered-alternatives section below for the full record. Two
 forces now point the same way:
 
 1. The parts thesis (surplus mixers/LO/IF bricks are where the arbitrage
