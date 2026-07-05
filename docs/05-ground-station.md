@@ -57,6 +57,34 @@ What it buys, in rough order of contest value:
    for stations that were workable but never found. Directly measures the
    thing this whole project exists to fix.
 
+### Timestamping
+
+The recording can be timestamped to a precision far beyond anything a
+log needs, essentially for free: the ADC sample clock at the head is the
+GPS-disciplined reference (decision #19), so **the sample counter itself is
+a clock** — it never drifts against GPS. Anchor the counter to absolute
+time once per second (PPS marks the sample on which the second begins) and
+every one of the ~430 billion samples in a 48 h recording carries an
+absolute GPS-traceable timestamp; at 2.5 Msps the raw granularity is
+400 ns, and the PPS anchor keeps absolute error in the tens of ns.
+
+Design obligation: the head→GS stream protocol must carry `(sample
+counter, PPS anchor)` metadata, and the recorder must preserve it —
+including across any dropped-packet gaps (gaps must consume counter space,
+not silently concatenate).
+
+What sub-µs timestamps unlock beyond tidy logs:
+
+- **Cross-station correlation** — two or more stations recording the same
+  contest with this architecture can align their IQ to sub-µs and do TDOA:
+  passively localize interference, or study how the same signal arrived at
+  two sites (aircraft scatter, ducting).
+- **Propagation forensics** — meteor-scatter ping timing, Doppler tracks of
+  aircraft reflections, es opening onset times — all measurable from the
+  archive.
+- **Exact log reconciliation** — every logged QSO maps to a sample range;
+  replay is indexable by log entry.
+
 ## Form factor: 19″ rack server case, modified front panel *(considering)*
 
 The idea: a standard rack server chassis, front panel replaced/machined
