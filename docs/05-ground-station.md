@@ -85,6 +85,34 @@ What sub-µs timestamps unlock beyond tidy logs:
 - **Exact log reconciliation** — every logged QSO maps to a sample range;
   replay is indexable by log entry.
 
+## Convergence: the GS is a PC with a lot of PCIe
+
+Walking the requirements table, every line maps onto a slot or header of
+an ordinary PC platform:
+
+| Requirement | PC realization |
+| --- | --- |
+| Channelization / demod / skimmers | x86 CPU — 2 MHz of DSP is light work for modern cores |
+| NPU | M.2 or PCIe accelerator (Hailo-8 class), or GPU slot |
+| 48 h+ IQ recording | M.2 NVMe (2–4 TB) |
+| Mast point-to-point port | dedicated NIC port (or SFP NIC → fiber, Q3a) |
+| Terminal switch | multi-port NIC + software bridge, or a small managed switch board in the chassis |
+| Pro audio | PCIe/USB studio interface — an entire commodity market exists (balanced I/O, phantom, headphone amps) |
+| HID (knobs, PTT, paddle) | USB, or a small microcontroller board for the timing-critical inputs |
+| Real-time stack | Linux + RT tuning, CPU core pinning for the DSP path |
+
+No exotic hardware anywhere — the ground station is a **software product
+plus system integration**, not a hardware development project. The only
+custom physical element left is the front panel. This effectively answers
+the compute-platform question (Q3d) in favor of x86 + PCIe peripherals;
+the remaining constraint is **silence** (passive-cooling x86 builds and
+near-silent big-fan builds are both proven territory — the CPU chosen for
+DSP headroom must fit that thermal budget).
+
+It also de-risks the whole tier: every component is commodity,
+replaceable mid-contest from any computer shop, and upgradeable
+independently — the same brick philosophy as the RF chain, in PCIe form.
+
 ## Form factor: 19″ rack server case, modified front panel *(considering)*
 
 The idea: a standard rack server chassis, front panel replaced/machined
