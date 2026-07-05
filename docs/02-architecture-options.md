@@ -137,6 +137,53 @@ ENOB at the IF), clocked from the GPSDO-disciplined reference with a
 jitter budget matched to those bits** — clock quality is spent as
 carefully as bit count, or the bits are fiction.
 
+### LO implementation: crystal at the LO frequency, disciplined by PLL *(leaning)*
+
+Refinement of decision #9. Two ways to make a fixed, GPSDO-traceable
+~142 MHz LO (144–146 → 2–4 MHz IF):
+
+1. **Multiply 10 MHz up** — inherits the reference's phase noise
+   **+ 20·log₁₀(14.2) ≈ +23 dB** everywhere. Simple, but pays the
+   multiplication tax at every offset.
+2. **Run an actual VHF crystal oscillator at 142 MHz** (overtone crystal),
+   **phase-locked to the 10 MHz GPSDO through a deliberately narrow
+   loop**. Inside the loop bandwidth the PLL steers the crystal — accuracy
+   and long-term drift become the GPSDO's. Outside the loop bandwidth the
+   PLL is blind and the output is the **crystal's own phase noise at
+   carrier frequency — no multiplication tax at all**.
+
+```mermaid
+flowchart LR
+    GPSDO[GPSDO 10 MHz] --> PD[Phase detector<br/>÷N comparison]
+    XO[142 MHz overtone<br/>crystal oscillator] --> PD
+    PD -->|"narrow loop filter<br/>(~10–100 Hz BW)"| XO
+    XO ==>|LO out: GPSDO accuracy,<br/>crystal purity| MIX[RX mixer]
+```
+
+The design subtlety that decides whether this wins: **inside** the loop
+bandwidth the output still carries the reference's multiplied noise
+(+23 dB); **outside** it carries the crystal's. So the loop bandwidth must
+sit at the crossover where the multiplied-reference curve meets the
+crystal's own curve — typically tens of Hz. Set it too wide and the loop
+injects the multiplication tax back in; too narrow and the crystal wanders
+thermally before the loop catches it. This crossover measurement is a
+bench task once parts are in hand.
+
+Practical notes:
+
+- 142 MHz means a 5th/7th-overtone crystal — custom-ordered (quartz houses
+  still cut these; also the standard transverter-LO crystal ecosystem,
+  e.g. 116 MHz, shows the supply chain exists) or harvested.
+- 142 MHz sits safely out-of-band; the image (138–140 MHz) falls to the
+  preselector.
+- **Microphonics are the new enemy**: VHF crystals are vibration-sensitive
+  and this one lives *on a mast in the wind*. Mechanical mounting
+  (mass, damping, orientation) is part of the LO design, and the narrow
+  loop can't correct vibration-rate phase modulation — it's outside the
+  loop BW by construction.
+- The same architecture serves the TX IQ LO (mid/edge-band per #22) with a
+  second crystal.
+
 Remaining before closing: the combined platform decision (#8 + #22 TX) —
 the digitizer, the PureSignal feedback channel, and the IQ TX path should
 land on one coherent platform. A costed trade study with real surplus
