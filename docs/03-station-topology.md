@@ -50,6 +50,24 @@ flowchart TB
   eliminates USB-tethered candidates (decisions.md #8).
 - **GPS antenna is right there** — the GPSDO reference gets sky view for
   free.
+- **Cooling comes free with the location.** The PA — the only serious heat
+  source — sits in moving outdoor air on an elevated mast, which is about
+  the best convective environment a radio can get: no rack, no room
+  heating up around it, near-constant wind. Design consequence: make the
+  **enclosure itself the heatsink** (PA bolted to a finned wall, fins
+  vertical for convection when the wind stops) and the unit can be fanless
+  — no moving parts to fail up where service means climbing, and no fan
+  noise coupling into anything.
+  The acoustic corollary matters for contest audio: the loudest thing in a
+  conventional station — the PA blower, working hardest exactly while the
+  mic is open — is now up the mast instead of next to the operator. The
+  operating position stays quiet, so the (professional-grade) mic chain
+  picks up voice, not fan roar; the desk-side ground station should keep it
+  that way by being fanless or near-silent itself. Quieter room → cleaner
+  TX audio and less fatigue over a 24 h contest.
+  Caveats already on the books in the
+  environment section: direct summer sun load (shade/orientation or a sun
+  shield) and the sealed-enclosure winter/summer cycling.
 
 ## What this costs (design obligations, not objections)
 
